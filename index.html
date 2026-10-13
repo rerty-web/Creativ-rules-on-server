@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>КРЕАТИВ-ПРАВИЛА · Уютный Уголок</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    @keyframes glitch {
+      0% { transform: translate(0); }
+      20% { transform: translate(-4px, 2px); }
+      40% { transform: translate(4px, -2px); }
+      60% { transform: translate(-2px, 1px); }
+      80% { transform: translate(2px, -1px); }
+      100% { transform: translate(0); }
+    }
+    @keyframes flicker {
+      0% { opacity: 1; }
+      50% { opacity: 0.4; }
+      100% { opacity: 1; }
+    }
+    @keyframes pulse-red {
+      0% { box-shadow: 0 0 5px #ff0022, 0 0 10px #ff0022; }
+      50% { box-shadow: 0 0 22px #ff0022, 0 0 45px #ff2200; }
+      100% { box-shadow: 0 0 5px #ff0022, 0 0 10px #ff0022; }
+    }
+    @keyframes neon-glow {
+      0% { box-shadow: 0 0 5px #ff0033, 0 0 12px #ff0033; }
+      50% { box-shadow: 0 0 20px #ff3344, 0 0 40px #ff0022; }
+      100% { box-shadow: 0 0 5px #ff0033, 0 0 12px #ff0033; }
+    }
+    @keyframes cursor-glow {
+      0% { filter: drop-shadow(0 0 3px #ff0033) drop-shadow(0 0 8px #ff0033); }
+      50% { filter: drop-shadow(0 0 10px #ff3344) drop-shadow(0 0 22px #ff0022); }
+      100% { filter: drop-shadow(0 0 3px #ff0033) drop-shadow(0 0 8px #ff0033); }
+    }
+    @keyframes petal-fall {
+      0% { transform: translateY(-10vh) rotate(0deg); opacity: 0; }
+      10% { opacity: 1; }
+      90% { opacity: 1; }
+      100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+    }
+    @keyframes eye-glow {
+      0% { text-shadow: 0 0 8px #ff0033, 0 0 16px #ff3344; }
+      50% { text-shadow: 0 0 20px #ff3344, 0 0 40px #ff0022; }
+      100% { text-shadow: 0 0 8px #ff0033, 0 0 16px #ff3344; }
+    }
+    .glitch-text {
+      animation: glitch 0.3s infinite;
+      text-shadow: 3px 0 #ff0033, -3px 0 #ff2200;
+    }
+    .neon-line {
+      background: linear-gradient(to bottom, #ff0033, #ff3344, #ff0022);
+      box-shadow: 0 0 10px #ff0033, 0 0 22px #ff3344, 0 0 45px #ff0022;
+    }
+    .neon-border {
+      border: 1px solid #ff0033;
+      box-shadow: 0 0 10px #ff0033, inset 0 0 10px rgba(255, 0, 51, 0.3);
+    }
+    .penalty-flash {
+      animation: pulse-red 0.8s infinite, flicker 0.15s infinite;
+    }
+    .timeline-dot {
+      animation: neon-glow 1.2s infinite;
+    }
+
+    body, * {
+      cursor: none !important;
+    }
+    #neon-cursor {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 28px;
+      height: 28px;
+      pointer-events: none;
+      z-index: 99999;
+      transform: translate(-2px, -2px);
+      animation: cursor-glow 0.9s infinite;
+      transition: transform 0.04s ease-out;
+    }
+    #neon-cursor-trail {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,0,51,0.55) 0%, rgba(255,0,51,0) 70%);
+      pointer-events: none;
+      z-index: 99998;
+      transform: translate(-12px, -12px);
+      transition: transform 0.12s ease-out;
+    }
+
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0a0000;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #ff0033;
+      border-radius: 0;
+      box-shadow: 0 0 12px #ff0033;
+    }
+    .petal {
+      position: fixed;
+      width: 14px;
+      height: 14px;
+      background: radial-gradient(circle at 30% 30%, #ff3344, #ff0033, #6b0011);
+      border-radius: 150% 0 150% 0;
+      pointer-events: none;
+      z-index: 5;
+      opacity: 0.7;
+      animation: petal-fall linear infinite;
+      filter: drop-shadow(0 0 6px #ff0033);
+    }
+    .glow-text {
+      animation: eye-glow 2s infinite;
+    }
+  </style>
+</head>
+<body class="bg-black text-white font-mono overflow-x-hidden">
+  <div id="root"></div>
+  <div id="neon-cursor-trail"></div>
+  <div id="neon-cursor">
+    <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M4 2 L4 22 L10 17 L14 26 L18 24 L14 15 L22 15 Z"
+            fill="#ff0033" stroke="#ffccdd" stroke-width="1.4" stroke-linejoin="round"/>
+      <path d="M4 2 L4 22 L10 17 L14 26 L18 24 L14 15 L22 15 Z"
+            fill="url(#cursorGrad)" opacity="0.6"/>
+      <defs>
+        <linearGradient id="cursorGrad" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#ff6677"/>
+          <stop offset="100%" stop-color="#ff0022"/>
+        </linearGradient>
+      </defs>
+    </svg>
+  </div>
+
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    const RULES = [
+      {
+        id: "К.1",
+        title: "Уважительное отношение к участникам",
+        full: "Проявлять уважительное и тактичное отношение ко всем пользователям, которых вы приглашаете на мероприятие, вне зависимости от пола, возраста, национальности, принадлежности к религии и другие виды дискриминации. Запрещены оскорбления и агрессивная критика участников за низкий уровень навыков.",
+        penalty: "Выговор по причине некомпетентность, неподобающее поведение в зависимости от ситуации.",
+        exceptions: ["Нет исключений — правило действует для всех."],
+        subItems: [
+          { text: "1.1. Уважение вне зависимости от пола, возраста, национальности, религии.", type: "normal" },
+          { text: "1.2. Запрещены оскорбления и агрессивная критика участников за низкий уровень навыков.", type: "normal" }
+        ]
+      },
+      {
+        id: "К.2",
+        title: "Запрет на кумовство и блат",
+        full: "Запрещено выделение из личных предпочтений одного или группы участников мероприятий (выступление вне очереди, приоритет на выбор темы, выдача большего количества монеток, выставление оценок выше заслуженного). Запрещено выделение участников путём выдачи тематических ролей по собственному желанию, выдача и прослушивание на роли не своего клуба. Приравнивается к кумовству, блатовству.",
+        penalty: "Выговор по причине некомпетентность, неподобающее поведение, превышение полномочий в зависимости от ситуации.",
+        exceptions: ["Нет исключений — кумовство запрещено всегда."],
+        subItems: [
+          { text: "2.1. Запрещено выделение участников (вне очереди, приоритет темы, монетки, оценки).", type: "normal" },
+          { text: "2.2. Запрещена выдача тематических ролей по собственному желанию.", type: "normal" },
+          { text: "2.3. Запрещена выдача и прослушивание на роли не своего клуба.", type: "normal" }
+        ]
+      },
+      {
+        id: "К.3",
+        title: "Покидание ивента ведущими и со-ведущими",
+        full: "Будучи ведущим или со-ведущим, самовольно покидать ивент можно ТОЛЬКО в следующих ситуациях:",
+        penalty: "Выговор по причине некомпетентность, невыполнение своих обязанностей в зависимости от ситуации.",
+        exceptions: [
+          "Для ВЕДУЩИХ: прекращение ивента досрочно при согласовании с вышестоящим; уведомлять не нужно, если онлайн менее 3 человек. Продолжение с малым онлайном — на усмотрение креатива.",
+          "Для СО-ВЕДУЩИХ: можно покинуть, если основной ведущий не против. Разрешено отлучиться для решения конфликтов (перенести участников в прослушку и кратко решить вопрос).",
+          "Досрочное закрытие фиксируется отчётом, афиша закрывается вовремя."
+        ],
+        subItems: [
+          { text: "3.1. Ведущий: досрочное завершение — только с согласованием вышестоящих.", type: "normal" },
+          { text: "3.2. Ведущий: при онлайне < 3 человек — уведомлять не нужно.", type: "normal" },
+          { text: "3.3. Со-ведущий: уход — только с согласия основного ведущего.", type: "normal" },
+          { text: "3.4. Со-ведущий: может отлучиться для решения конфликтов в прослушке.", type: "normal" },
+          { text: "3.5. Досрочное закрытие ивента фиксируется отчётом.", type: "normal" }
+        ]
+      },
+      {
+        id: "К.4",
+        title: "Конфликты в публичных голосовых каналах",
+        full: "Запрещён вынос рабочих конфликтов в публичных голосовых каналах Уютного Уголка, поддержка и участие в них. Подобные ситуации допустимо обсуждать в голосовых каналах, в которых нет доступа для юзеров.",
+        penalty: "Выговор по причине некомпетентность, деструктив, невыполнение своих обязанностей в зависимости от ситуации.",
+        exceptions: [
+          "Обсуждение конфликтов допустимо в голосовых каналах без доступа для юзеров."
+        ],
+        subItems: [
+          { text: "4.1. Если разговор начал ЮЗЕР — переместите в прослушку, попросите сменить тему или напишите в чат/ЛС. При игноре — откат и пред.", type: "normal" },
+          { text: "4.2. Если разговор начал КРЕАТИВ — переместите в прослушку или напишите о смене темы. При игноре — откат и передача информации вышестоящим.", type: "normal" },
+          { text: "4.3. Если разговор начал ДРУГОЙ СТАФФ — переместите в прослушку или напишите о смене темы. При игноре — откат и передача вышестоящим для разбирательств с администрацией его ветки.", type: "normal" },
+          { text: "4.4. Самостоятельно разбирать конфликты с участием стаффа других веток ЗАПРЕЩЕНО. Такие конфликты разбираются ролью Deputy и выше.", type: "exception" }
+        ],
+        quote: {
+          text: "Рабочие конфликты — не для публичных ушей. Выносишь сор из избы — получаешь выговор.",
+          icon: "🎭"
+        }
+      },
+      {
+        id: "К.5",
+        title: "Запрет срывов и неформального общения",
+        full: "Запрещены срывы мероприятий, излишне неформальное общение, которое подрывает авторитет и настроения, с креативами своего и другого клуба во время мероприятий.",
+        penalty: "Выговор по причине некомпетентность.",
+        exceptions: ["Нет исключений — правило действует на всех мероприятиях."],
+        subItems: [
+          { text: "5.1. Запрещены срывы мероприятий.", type: "normal" },
+          { text: "5.2. Запрещено излишне неформальное общение, подрывающее авторитет и настроение.", type: "normal" },
+          { text: "5.3. Действует как с креативами своего клуба, так и другого.", type: "normal" }
+        ]
+      },
+      {
+        id: "К.6",
+        title: "Размуты от креатива другого клуба",
+        full: "На усмотрение мастера креатив другого клуба или другой стафф сервера может давать размуты юзерам без тематических ролей при условии нахождения в голосовом канале. Такие размуты разрешены с 23:00 до 10:00 по МСК. В случае ухода из голосового канала, юзерам нужно снова закрыть доступ к микрофону путём перемещения из голосового канала.",
+        penalty: "Выговор по причине некомпетентность, невыполнение своих обязанностей в зависимости от ситуации.",
+        exceptions: [
+          "В качестве исключения допустимо не давать мут юзерам, которые ведут себя адекватно, если на момент ухода из голосового канала участники активно обсуждают что-то по тематике клуба, проявляют активность в исполнении или при проведении мероприятий от юзеров."
+        ],
+        subItems: [
+          { text: "6.1. Размуты от креатива другого клуба / стаффа — только при нахождении в голосовом канале.", type: "normal" },
+          { text: "6.2. Размуты разрешены с 23:00 до 10:00 по МСК.", type: "normal" },
+          { text: "6.3. При уходе из голосового канала — снова закрыть доступ к микрофону (перемещением).", type: "normal" },
+          { text: "6.4. Исключение: можно не давать мут адекватным юзерам, если обсуждают тематику клуба, активны в исполнении или проводят мероприятия.", type: "exception" }
+        ]
+      }
+    ];
+
+    const RuleCard = ({ rule }) => {
+      const [isOpen, setIsOpen] = useState(false);
+
+      return (
+        <div className="relative mb-6 pl-8 md:pl-12">
+          <div className="absolute left-0 top-1 w-5 h-5 rounded-full bg-red-500 timeline-dot border-2 border-red-200 z-10" 
+               style={{ boxShadow: '0 0 18px #ff0033, 0 0 35px #ff3344' }}></div>
+          
+          <div 
+            className={`neon-border bg-gradient-to-br from-black via-[#1a0005] to-black backdrop-blur-sm rounded-lg overflow-hidden transition-all duration-300 ${isOpen ? 'shadow-[0_0_40px_#ff0033]' : 'shadow-[0_0_18px_#ff0033]'}`}
+          >
+            <div 
+              className="p-4 md:p-5 flex items-center justify-between cursor-pointer hover:bg-red-950/40 transition-colors"
+              onClick={() => setIsOpen(!isOpen)}
+            >
+              <div className="flex items-center gap-4">
+                <span className="text-2xl md:text-3xl font-black text-red-400 glow-text">
+                  {rule.id}
+                </span>
+                <span className="text-lg md:text-xl font-bold text-red-50 tracking-wide">
+                  {rule.title}
+                </span>
+              </div>
+              <div className={`text-red-400 transition-transform duration-300 text-xl ${isOpen ? 'rotate-180' : ''}`}>
+                ▼
+              </div>
+            </div>
+
+            {isOpen && (
+              <div className="px-5 pb-5 border-t border-red-800/60 pt-4 space-y-4">
+                <p className="text-red-50/90 leading-relaxed whitespace-pre-line">{rule.full}</p>
+
+                {rule.subItems && (
+                  <ul className="space-y-2 mt-3">
+                    {rule.subItems.map((sub, idx) => (
+                      <li key={idx} className={`flex items-start gap-2 text-sm ${sub.type === 'exception' ? 'text-yellow-300' : 'text-red-200/80'}`}>
+                        <span className="text-red-400 mt-0.5">⚡</span>
+                        <span>{sub.text}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+
+                {rule.quote && (
+                  <div className="mt-4 p-4 border-l-4 border-red-500 bg-red-950/30 rounded flex items-center gap-4">
+                    <span className="text-4xl">{rule.quote.icon}</span>
+                    <p className="italic text-red-200 text-md">«{rule.quote.text}»</p>
+                  </div>
+                )}
+
+                {rule.exceptions && rule.exceptions.length > 0 && (
+                  <div className="mt-4 p-3 bg-black/60 rounded border border-red-800/50">
+                    <h4 className="text-red-400 text-sm font-bold mb-2 flex items-center gap-2">
+                      <span>🛡️</span> ИСКЛЮЧЕНИЯ
+                    </h4>
+                    <ul className="list-disc list-inside text-red-200/70 text-sm space-y-1">
+                      {rule.exceptions.map((exc, i) => (
+                        <li key={i}>{exc}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                <div className="penalty-flash mt-4 p-3 bg-red-950/80 border-2 border-red-500 rounded-md">
+                  <p className="text-red-300 font-bold text-sm flex items-center gap-2">
+                    <span className="text-lg">💀</span> НАКАЗАНИЕ:
+                  </p>
+                  <p className="text-red-200 text-sm mt-1">{rule.penalty}</p>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      );
+    };
+
+    const ClanSeal = () => {
+      const [accepted, setAccepted] = useState(false);
+      
+      const handleAccept = () => {
+        setAccepted(true);
+      };
+
+      return (
+        <div className="flex flex-col items-center justify-center my-12">
+          <button
+            onClick={handleAccept}
+            className={`relative px-10 py-6 text-2xl font-black uppercase tracking-widest transition-all duration-300 rounded-full border-4 
+              ${accepted 
+                ? 'bg-green-900/40 border-green-500 text-green-300 shadow-[0_0_40px_#00ff00]' 
+                : 'bg-black border-red-500 text-red-300 hover:bg-red-950/50 shadow-[0_0_40px_#ff0033] hover:shadow-[0_0_70px_#ff3344]'
+              }`}
+            style={{
+              transform: accepted ? 'scale(0.95)' : 'scale(1)',
+              transition: 'all 0.3s ease'
+            }}
+          >
+            <span className="relative z-10 flex items-center gap-3">
+              {accepted ? '✔ ПРИНЯТО' : 'ПРИНЯТЬ ПРАВИЛА'}
+              <span className="text-3xl">⚔️</span>
+            </span>
+            <div className="absolute inset-0 rounded-full border-2 border-red-400/60 animate-ping opacity-60"></div>
+          </button>
+          {accepted && (
+            <p className="text-red-400 text-sm mt-4 animate-pulse glow-text">
+              Печать клана активирована. Добро пожаловать.
+            </p>
+          )}
+        </div>
+      );
+    };
+
+    const Petals = () => {
+      const [petals, setPetals] = useState([]);
+
+      useEffect(() => {
+        const newPetals = Array.from({ length: 18 }, (_, i) => ({
+          id: i,
+          left: Math.random() * 100,
+          delay: Math.random() * 12,
+          duration: 8 + Math.random() * 8,
+          size: 8 + Math.random() * 10,
+        }));
+        setPetals(newPetals);
+      }, []);
+
+      return (
+        <>
+          {petals.map(p => (
+            <div
+              key={p.id}
+              className="petal"
+              style={{
+                left: `${p.left}%`,
+                width: `${p.size}px`,
+                height: `${p.size}px`,
+                animationDelay: `${p.delay}s`,
+                animationDuration: `${p.duration}s`,
+              }}
+            />
+          ))}
+        </>
+      );
+    };
+
+    function App() {
+      useEffect(() => {
+        const cursor = document.getElementById('neon-cursor');
+        const trail = document.getElementById('neon-cursor-trail');
+        let mouseX = 0, mouseY = 0;
+        let cursorX = 0, cursorY = 0;
+        let trailX = 0, trailY = 0;
+
+        const onMove = (e) => {
+          mouseX = e.clientX;
+          mouseY = e.clientY;
+        };
+
+        const animate = () => {
+          cursorX += (mouseX - cursorX) * 0.25;
+          cursorY += (mouseY - cursorY) * 0.25;
+          trailX += (mouseX - trailX) * 0.12;
+          trailY += (mouseY - trailY) * 0.12;
+
+          if (cursor) {
+            cursor.style.transform = `translate(${cursorX - 2}px, ${cursorY - 2}px)`;
+          }
+          if (trail) {
+            trail.style.transform = `translate(${trailX - 12}px, ${trailY - 12}px)`;
+          }
+          requestAnimationFrame(animate);
+        };
+
+        window.addEventListener('mousemove', onMove);
+        const raf = requestAnimationFrame(animate);
+        return () => {
+          window.removeEventListener('mousemove', onMove);
+          cancelAnimationFrame(raf);
+        };
+      }, []);
+
+      const [glitch, setGlitch] = useState(false);
+      useEffect(() => {
+        const interval = setInterval(() => {
+          setGlitch(true);
+          setTimeout(() => setGlitch(false), 150);
+        }, 3500);
+        return () => clearInterval(interval);
+      }, []);
+
+      return (
+        <div className="min-h-screen bg-black relative overflow-hidden">
+          <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-red-600/30 rounded-full blur-[120px] pointer-events-none"></div>
+          <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-red-800/25 rounded-full blur-[120px] pointer-events-none"></div>
+          <div className="absolute top-1/2 left-0 w-[400px] h-[400px] bg-red-700/20 rounded-full blur-[100px] pointer-events-none"></div>
+          
+          <Petals />
+
+          <div className="container mx-auto px-4 py-12 relative z-10">
+            <div className="relative text-center mb-16">
+              <h1 className={`text-7xl md:text-9xl font-black tracking-wider ${glitch ? 'glitch-text' : ''}`}
+                  style={{
+                    color: '#fff',
+                    textShadow: '0 0 15px #ff0033, 0 0 30px #ff3344, 0 0 60px #ff0022, 4px 4px 0 #000, 8px 8px 0 #ff0033'
+                  }}>
+                КРЕАТИВ
+                <span className="absolute inset-0 flex items-center justify-center overflow-hidden" aria-hidden="true">
+                  <span className="text-7xl md:text-9xl font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-red-400 via-red-500 to-red-700 opacity-70"
+                        style={{ clipPath: 'polygon(0 0, 100% 0, 100% 45%, 0 45%)', transform: 'translateY(-2px)' }}>
+                    КРЕАТИВ
+                  </span>
+                </span>
+              </h1>
+              <div className="relative h-1.5 w-full max-w-2xl mx-auto bg-gradient-to-r from-transparent via-red-500 to-transparent shadow-[0_0_30px_#ff0033] my-3"></div>
+              <p className="text-red-300 text-sm tracking-[0.4em] mt-4 glow-text">ПРАВИЛА УЮТНОГО УГОЛКА</p>
+            </div>
+
+            <div className="relative max-w-3xl mx-auto">
+              <div className="absolute left-0 top-0 bottom-0 w-0.5 neon-line ml-[9px] md:ml-[17px]"></div>
+              
+              {RULES.map((rule) => (
+                <RuleCard key={rule.id} rule={rule} />
+              ))}
+            </div>
+
+            <ClanSeal />
+          </div>
+
+          <div className="fixed top-20 left-5 text-red-500/40 text-6xl rotate-12 select-none pointer-events-none">⚔️</div>
+          <div className="fixed bottom-20 right-5 text-red-500/40 text-6xl -rotate-12 select-none pointer-events-none">🌸</div>
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
